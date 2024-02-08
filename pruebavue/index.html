@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD con JavaScript y jQuery</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+<h2>Lista de Usuarios</h2>
+<ul id="userList"></ul>
+<button id="addUser">Agregar Usuario</button>
+<script>
+    // URL de la API RESTful
+    const apiUrl = 'http://localhost:3000/users';
+    // Función para obtener la lista de usuarios
+    function getUsers() {
+        $.ajax({
+            url: apiUrl,
+            method: 'GET',
+            success: function (data) {
+                displayUsers(data);
+            },
+            error: function (error) {
+                console.error('Error al obtener usuarios:', error);
+            }
+        });
+    }
+    // Función para mostrar la lista de usuarios en la página
+    function displayUsers(users) {
+        const userList = $('#userList');
+        userList.empty();
+        users.forEach(function (user) {
+            const listItem = $('<li>');
+            listItem.text(user.id +". "+ user.name);
+// Puedes agregar más información del usuario al listItem según tus necesidades
+            userList.append(listItem);
+        });
+    }
+
+    // Función para agregar un nuevo usuario
+    function addUser() {
+        const userName = prompt('Ingrese el nombre del nuevo usuario:');
+        if (userName) {
+            const newUser = {
+                name: userName
+// Puedes agregar más propiedades según tus necesidades
+            };
+            $.ajax({
+                url: apiUrl,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(newUser),
+                success: function () {
+                    getUsers(); // Actualizar la lista después de agregar un usuario
+                },
+                error: function (error) {
+                    console.error('Error al agregar usuario:', error);
+                }
+            });
+        }
+    }
+    // Manejadores de eventos
+    $('#addUser').on('click', addUser);
+    // Obtener la lista de usuarios al cargar la página
+    getUsers();
+</script>
+</body>
+</html>
